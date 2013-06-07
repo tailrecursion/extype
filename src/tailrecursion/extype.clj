@@ -11,7 +11,7 @@
   [type parent & more]
   (let [message (find-first string? more)
         data    (or (find-first map? more) {}) 
-        ext     (extype parent)
+        ext     (extype (eval parent))
         message (or message (::message ext))
         data    (merge (::data ext) data)]
     `(do
