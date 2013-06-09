@@ -1,4 +1,6 @@
-(ns tailrecursion.extype)
+(ns tailrecursion.extype
+  (:require
+    [clojure.stacktrace :as st :refer [print-cause-trace]]))
 
 (defmulti extype identity)
 
@@ -37,5 +39,6 @@
           d  (::data p)
           c  (loop [cx (.getCause e), cc []]
                (if cx (recur (.getCause cx) (conj cc (.getMessage cx))) cc))
+          z  (with-out-str (print-cause-trace e))
           td (::data (extype t))]
-      (into {:type t :isa a :message m :data d :cause c} td))))
+      (into {:type t :isa a :message m :data d :cause c :trace z} td))))
