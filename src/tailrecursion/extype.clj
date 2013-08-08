@@ -1,6 +1,6 @@
 (ns tailrecursion.extype
   (:require
-    [clojure.stacktrace :as st :refer [print-cause-trace]]))
+    [clojure.stacktrace :as st :refer [print-cause-trace print-stack-trace]]))
 
 (defmulti extype identity)
 
@@ -39,6 +39,11 @@
           d  (::data p)
           c  (loop [cx (.getCause e), cc []]
                (if cx (recur (.getCause cx) (conj cc (.getMessage cx))) cc))
-          z  (with-out-str (print-cause-trace e))
+          z  (with-out-str 
+               (try (print-cause-trace e)
+                 (catch Throwable x
+                   (try (print-stack-trace e)
+                     (catch Throwable x
+                       (printf "No stack trace: %s" (.getMessage x)))))))
           td (::data (extype t))]
       (into {:type t :isa a :message m :data d :cause c :trace z} td))))
